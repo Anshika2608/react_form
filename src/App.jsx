@@ -56,7 +56,7 @@ function App() {
       newErrors.rollNo = "Roll number is invalid";
     }
     if (!formData.username.match(usernameRegex)) {
-      newErrors.username = "UserName is invalid";
+      newErrors.username = "UserName is invalid.It does not contain any special character";
     }
     if (!formData.contact.match(contactRegex)) {
       newErrors.contact = "Contact number is invalid";
@@ -202,7 +202,7 @@ function App() {
           {errors.username && <span className="em1">! {errors.username}</span>}
         </div>
         <Name
-          placeholder="must be of length 7"
+          placeholder="minimum 6 characters"
           type="password"
           name="password"
           text="Enter Password : "
