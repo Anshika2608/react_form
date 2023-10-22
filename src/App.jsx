@@ -1,8 +1,41 @@
-import { useState } from "react";
-import "./App.css";
+import React, { useState } from "react";
 import Name from "./components/Name";
 
+function PasswordInput(props) {
+  const [passwordVisible, setPasswordVisible] = useState(false);
+
+  const togglePasswordVisibility = () => {
+    setPasswordVisible(!passwordVisible);
+  };
+
+  return (
+    <div className="showbutton1">
+      <input
+        type={passwordVisible ? "text" : "password"}
+        name={props.name}
+        placeholder={props.placeholder}
+        value={props.value}
+        onChange={props.onChange}
+      />
+      <button onClick={togglePasswordVisibility} className="showButton">
+        {passwordVisible ? "Hide" : "Show"}
+      </button>
+    </div>
+  );
+}
 function App() {
+  const initialErrors = {
+    name: "",
+    email: "",
+    gender: "",
+    studentNo: "",
+    rollNo: "",
+    username: "",
+    password: "",
+    confirmpassword: "",
+    contact: "",
+  };
+
   const [formData, setFormData] = useState({
     name: "",
     password: "",
@@ -13,11 +46,132 @@ function App() {
     rollNo: "",
     city: "",
     username: "",
-    // copassword:""
+    contact: "",
   });
 
-  const [errors, setErrors] = useState({});
-  const [passwordMatch, setPasswordMatch] = useState(true);
+  const [errors, setErrors] = useState(initialErrors);
+
+  const nameRegex = /^[A-Za-z\s]+$/;
+  const cityRegex = /^[A-Za-z\s]+$/;
+  const emailRegex = /^[A-Z0-9._%+-]+@[A-Z0-9.-]+\.[A-Z]{2,4}$/i;
+  const studentNoRegex = /^\d{7}$/;
+  const rollNoRegex = /^\d{13}$/;
+  const usernameRegex = /^[A-Za-z0-9\s]+$/;
+  const contactRegex = /^\d{10}$/;
+
+  const validate = (inputName, value) => {
+    switch (inputName) {
+      case "name":
+        if (value.length > 20) {
+          return "Name must not exceed 20 characters.";
+        }
+        if (!nameRegex.test(value)) {
+          return "Name can only have alphabets and space.";
+        }
+        if (nameRegex.test(value)) {
+          return true;
+        }
+
+        break;
+      case "city":
+        if (value.length > 20) {
+          return "Name must not exceed 20 characters.";
+        }
+        if (!cityRegex.test(value)) {
+          return "Name can only have alphabets and space.";
+        }
+        if (cityRegex.test(value)) {
+          return true;
+        }
+
+        break;
+
+      case "email":
+        if (!emailRegex.test(value)) {
+          return "Invalid email format.";
+        } else {
+          return true;
+        }
+        break;
+
+      case "studentNo":
+        if (!studentNoRegex.test(value)) {
+          return "Student number must contain 7 digits.";
+        }
+        if (studentNoRegex.test(value)) {
+          return true;
+        }
+        break;
+
+      case "rollNo":
+        if (!rollNoRegex.test(value)) {
+          return "Roll number must contain 13 digits.";
+        }
+        if (rollNoRegex.test(value)) {
+          return true;
+        }
+        break;
+
+      case "username":
+        if (value.length > 20) {
+          return "Username must not exceed 20 characters.";
+        }
+        if (!usernameRegex.test(value)) {
+          return "Invalid username format.";
+        }
+        if (usernameRegex.test(value)) {
+          return true;
+        }
+        break;
+
+      case "contact":
+        if (!contactRegex.test(value)) {
+          return "Contact number must contain 10 digits.";
+        }
+        if (contactRegex.test(value)) {
+          return true;
+        }
+        break;
+
+      case "password":
+        const minMaxLength = /^[\s\S]{8,32}$/;
+        const upper = /[A-Z]/;
+        const lower = /[a-z]/;
+        const number = /[0-9]/;
+        const special = /[ !"#$%&'()*+,\-./:;<=>?@[\\\]^_`{|}~]/;
+
+        if (
+          minMaxLength.test(value) &&
+          upper.test(value) &&
+          lower.test(value) &&
+          number.test(value) &&
+          special.test(value)
+        ) {
+          return true;
+        } else {
+          const errorMsg = [];
+          if (!minMaxLength.test(value)) errorMsg.push("at least 8 characters");
+          if (!upper.test(value)) errorMsg.push("an uppercase letter");
+          if (!lower.test(value)) errorMsg.push("a lowercase letter"); // Fixed typo here
+          if (!number.test(value)) errorMsg.push("a digit");
+          if (!special.test(value)) errorMsg.push("a special character");
+
+          return `Password must contain ${errorMsg.join(", ")}.`;
+        }
+
+      case "confirmpassword":
+        if (value !== formData.password) {
+          return "Passwords do not match";
+        }
+        if (value == formData.password) {
+          return true;
+        }
+        break;
+
+      default:
+        return true;
+    }
+  };
 
   const handleChange = (e) => {
     const { name, value } = e.target;
@@ -25,178 +179,128 @@ function App() {
       ...formData,
       [name]: value,
     });
-    setPasswordMatch(true);
+
+    validateField(name, value);
+  };
+
+  const validateField = (name, value) => {
+    const validationResult = validate(name, value);
+   
+    setErrors((prevErrors) => ({
+      ...prevErrors,
+      [name]: validationResult !== true ? validationResult : "",
+    }));
   };
 
   const validateForm = () => {
-    const newErrors = {};
-
-    // Validation using regular expressions
-    const nameRegex = /^[A-Za-z\s]+$/;
-    const emailRegex = /^[A-Z0-9._%+-]+@[A-Z0-9.-]+\.[A-Z]{2,4}$/i;
-    const passwordRegex = /^(?=.*\d)(?=.*[a-z])(?=.*[A-Z]).{6,}$/;
-    const studentNoRegex = /^\d{7}$/;
-    const rollNoRegex = /^\d{13}$/;
-    const usernameRegex = /^[A-Za-z0-9\s]+$/;
-    const contactRegex = /^\d{10}$/;
-    const minMaxLengthRegex = /^[\s\S]{8,32}$/;
-    const upperRegex = /[A-Z]/;
-    const lowerRegex = /[a-z]/;
-    const digitRegex = /\d/;
-    
-    const validationRules = [
-      { regex: minMaxLengthRegex, error: 'Password must be between 8 and 32 characters.' },
-      { regex: upperRegex, error: 'Password must contain at least one uppercase letter.' },
-      { regex: lowerRegex, error: 'Password must contain at least one lowercase letter.' },
-      { regex: digitRegex, error: 'Password must contain at least one digit.' },
-    ];
-
-    if (!formData.name.match(nameRegex)) {
-      newErrors.name = "Name is invalid";
-    }
-    if (!formData.email.match(emailRegex)) {
-      newErrors.email = "Email is invalid";
-    }
-    // if (!formData.password.match(passwordRegex)) {
-    //   newErrors.password = "Password is invalid.It must contain at least 6 characters, including at least one digit, one lowercase letter, and one uppercase letter.";
-    // }
-    if (!formData.studentNo.match(studentNoRegex)) {
-      newErrors.studentNo = "Student number is invalid";
-    }
-    if (!formData.rollNo.match(rollNoRegex)) {
-      newErrors.rollNo = "Roll number is invalid";
-    }
-    if (!formData.username.match(usernameRegex)) {
-      newErrors.username = "UserName is invalid.It does not contain any special character";
-    }
-    if (!formData.contact.match(contactRegex)) {
-      newErrors.contact = "Contact number is invalid";
-    }
-    for (const rule of validationRules) {
-      if (!rule.regex.test(formData.password)) {
-        newErrors.password = rule.error;
-        break; 
-      }
-    }
-
-    setErrors(newErrors);
-
-    return Object.keys(newErrors).length === 0;
+    return (
+      Object.values(errors).every((error) => error === "") &&
+      formData.password === formData.confirmpassword
+    );
   };
+
   const handleSubmit = (e) => {
     e.preventDefault();
-    if (validateForm()) {
-      if (formData.password === formData.confirmpassword) {
-        // Submit the form or perform other actions here
-        console.log("Form data:", formData);
-      } else {
-        setPasswordMatch(false);
-        // Passwords do not match, set an error message
-        // setErrors({ ...errors, password: "Passwords do not match" });
-      }
-    }
-    // } else {
-    //   alert("Passwords do not match");
-    // }
+    if(validateForm())
+    { console.log("Form data:", formData);}
   };
-
   return (
-    <div>
+    <div className="container">
       <h1>REGISTRATION FORM</h1>
       <p>Please fill out this form with the required information</p>
       <form onSubmit={handleSubmit}>
         <Name
           text="Enter Your Name : "
-          placeholder="Must contains only alphabets"
+          placeholder="Must contain only alphabets"
           type="text"
           name="name"
           value={formData.name}
           onChange={handleChange}
         />
-        <br />
-        <div className="em">
-          {errors.name && <span className="em1">! {errors.name}</span>}
-        </div>
-        {/* <Gender /><br />
-        <Dob /><br /> */}
+        {errors.name && <div className="error-message">{errors.name}</div>}
+
         <Name
-          placeholder="Ex: xyz@abc.in  "
+          placeholder="Ex: xyz@abc.in"
           type="email"
           name="email"
           text="Enter Your email : "
           value={formData.email}
           onChange={handleChange}
         />
-        <br />
-        <div className="em">
-          {errors.email && <span className="em1">! {errors.email}</span>}
+        {errors.email && <div className="error-message">{errors.email}</div>}
+
+        <p>Select your Gender</p>
+        <div>
+          <label>
+            <input
+              type="radio"
+              name="gender"
+              value="male"
+              checked={formData.gender === "male"}
+              onChange={handleChange}
+            />{" "}
+            Male
+          </label>
         </div>
-        <p> Select your Gender</p>
+        <div>
+          <label>
+            <input
+              type="radio"
+              name="gender"
+              value="female"
+              checked={formData.gender === "female"}
+              onChange={handleChange}
+            />{" "}
+            Female
+          </label>
+        </div>
+        <div>
+          <label>
+            <input
+              type="radio"
+              name="gender"
+              value="other"
+              checked={formData.gender === "other"}
+              onChange={handleChange}
+            />{" "}
+            Other
+          </label>
+        </div>
+
         <Name
-          type="radio"
-          name="gender"
-          value="male"
-          checked={formData.gender === "male"}
-          text="male"
-          onChange={handleChange}
-        />
-        <br />
-        <Name
-          type="radio"
-          name="gender"
-          value="female"
-          checked={formData.gender === "female"}
-          text="female"
-          onChange={handleChange}
-        />
-        <br />
-        <Name
-          type="radio"
-          name="gender"
-          value="other"
-          checked={formData.gender === "other"}
-          text="other"
-          onChange={handleChange}
-        />
-        <br />
-        <Name
-          placeholder="must contain 7 digits"
+          placeholder="Must contain 7 digits"
           type="number"
           name="studentNo"
           text="Enter Your student number : "
           value={formData.studentNo}
           onChange={handleChange}
         />
-        <br />
-        <div className="em">
-          {errors.studentNo && (
-            <span className="em1">! {errors.studentNo}</span>
-          )}
-        </div>
+        {errors.studentNo && (
+          <div className="error-message">{errors.studentNo}</div>
+        )}
+
         <Name
-          placeholder="must contain 13 digits"
+          placeholder="Must contain 13 digits"
           type="number"
           name="rollNo"
           text="Enter Your roll number : "
           value={formData.rollNo}
           onChange={handleChange}
         />
-        <br />
-        <div className="em">
-          {errors.rollNo && <span className="em1">! {errors.rollNo}</span>}
-        </div>
+        {errors.rollNo && <div className="error-message">{errors.rollNo}</div>}
+
         <Name
           text="Enter Contact number : "
-          placeholder="Must contains 10 digits"
+          placeholder="Must contain 10 digits"
           type="number"
           name="contact"
           value={formData.contact}
           onChange={handleChange}
         />
-        <br />
-        <div className="em">
-          {errors.contact && <span className="em1">! {errors.contact}</span>}
-        </div>
+        {errors.contact && (
+          <div className="error-message">{errors.contact}</div>
+        )}
+
         <Name
           placeholder="Enter Your City"
           type="text"
@@ -205,7 +309,7 @@ function App() {
           value={formData.city}
           onChange={handleChange}
         />
-        <br />
+
         <Name
           placeholder="Enter Your UserName"
           type="text"
@@ -214,45 +318,48 @@ function App() {
           value={formData.username}
           onChange={handleChange}
         />
-        <br />
-        <div className="em">
-          {errors.username && <span className="em1">! {errors.username}</span>}
-        </div>
-        <Name
-          placeholder="minimum 8 characters"
-          type="password"
-          name="password"
-          text="Enter Password : "
-          value={formData.password}
-          onChange={handleChange}
-        />
-        <br />
-        <div className="em">
-          {errors.password && <span className="em1">! {errors.password}</span>}
-        </div>
-        <br />
-        <Name
-          placeholder="Confirm password"
-          type="password"
-          name="confirmpassword"
-          text="Confirm Password: "
-          value={formData.confirmpassword}
-          onChange={handleChange}
-        />
-        <br />
-        {passwordMatch === false && (
-          <div className="em">
-            <span className="em1">Passwords do not match</span>
-          </div>
+        {errors.username && (
+          <div className="error-message">{errors.username}</div>
         )}
-        {/* {errors.password && <span>{errors.password}</span>} */}
-        {/* {errors.password && <span className="em1">{errors.password}</span>} */}
-        {/* if (formData.password !== formData.confirmpassword){
-          <span className="em1">{errors.password}</span>
-         } */}
+
+        <div>
+          <label>
+            <span>Enter Password :</span>
+
+            <PasswordInput
+              placeholder="Must be at least 8 characters, including one uppercase letter, one lowercase letter, one digit, and one special character."
+              type="password"
+              name="password"
+              text="Enter Password : "
+              value={formData.password}
+              onChange={handleChange}
+            />
+          </label>
+        </div>
+        {errors.password && (
+          <div className="error-message">{errors.password}</div>
+        )}
+        <div>
+          <label>
+            <span>Confirm Password :</span>
+            <PasswordInput
+              placeholder="Confirm password"
+              type="password"
+              name="confirmpassword"
+              text="Confirm Password: "
+              value={formData.confirmpassword}
+              onChange={handleChange}
+            />
+          </label>
+        </div>
+        {errors.confirmpassword && (
+          <div className="error-message">{errors.confirmpassword}</div>
+        )}
 
         <div className="button">
-          <button type="submit">Submit</button>
+          <button type="submit" disabled={!validateForm()}>
+            Submit
+          </button>
         </div>
       </form>
     </div>

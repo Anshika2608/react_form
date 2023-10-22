@@ -1,10 +1,104 @@
-body {
-    width: 100%;
-    height: 100vh;
-    margin: 0;
+
+
+ body {
+    /* width:100vh; */
     background-color: #1b1b32;
     color: #f5f6f7;
-    font-family: Tahoma;
+    
+    
+    
+  }  
+  
+  /* App.css */
+  .container {
+    text-align: center;
+    max-width: 400px;
+    margin: 0 auto;
+    padding: 20px;
+    /* background-color: #007BFF; */
+    border-radius: 8px;
+    /* box-shadow: 0 4px 8px rgba(0, 0, 0, 0.2); */
+  }
+  
+  h1 {
+    text-align: center;
+    font-size: 24px;
+  }
+  
+  p {
+    text-align: center;
     font-size: 16px;
-}
-
+  }
+  
+  form {
+    text-align: left;
+  }
+  
+  .Name {
+    margin: 10px 0;
+  }
+  /* .showButton{
+    height:35px;
+    width:15%;
+  } */
+  .showbutton1{
+    display:flex;
+  }
+  .showButton {
+    background-color: #3498db;
+    color: #ffffff;
+    padding: 5px 10px;
+    border: none;
+    cursor: pointer;
+    transition: background-color 0.3s;
+    margin-left: 10px; 
+    height:35px;
+    width:15%;
+    margin-top: 6px;
+    /* vertical-align: middle; */
+    /* Adjust margin as needed */
+  }
+  .showButton:hover {
+    background-color: #2980b9;
+  }
+  
+  input[type="text"],
+  input[type="email"],
+  input[type="number"],
+  input[type="password"] {
+    width: 100%;
+    padding: 10px;
+    margin: 5px 0;
+    border: 1px solid #ccc;
+    border-radius: 3px;
+    text-align: center;
+  }
+  
+  input[type="radio"] {
+    margin-right: 5px;
+  }
+  
+  button {
+    width: 90%;
+    padding: 10px;
+    background-color: #007BFF;
+    color: #fff;
+    border: none;
+    border-radius: 3px;
+    cursor: pointer;
+    text-align: center;
+    margin-left: 27px;
+  }
+  
+  button:hover {
+    background-color: #0056b3;
+  }
+  
+  .error-message {
+    color: #FF0000;
+    font-size: 14px;
+    margin-top: 5px;
+  }
+  
+  
+  
