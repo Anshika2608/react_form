@@ -39,6 +39,17 @@ function App() {
     const rollNoRegex = /^\d{13}$/;
     const usernameRegex = /^[A-Za-z0-9\s]+$/;
     const contactRegex = /^\d{10}$/;
+    const minMaxLengthRegex = /^[\s\S]{8,32}$/;
+    const upperRegex = /[A-Z]/;
+    const lowerRegex = /[a-z]/;
+    const digitRegex = /\d/;
+    
+    const validationRules = [
+      { regex: minMaxLengthRegex, error: 'Password must be between 8 and 32 characters.' },
+      { regex: upperRegex, error: 'Password must contain at least one uppercase letter.' },
+      { regex: lowerRegex, error: 'Password must contain at least one lowercase letter.' },
+      { regex: digitRegex, error: 'Password must contain at least one digit.' },
+    ];
 
     if (!formData.name.match(nameRegex)) {
       newErrors.name = "Name is invalid";
@@ -46,9 +57,9 @@ function App() {
     if (!formData.email.match(emailRegex)) {
       newErrors.email = "Email is invalid";
     }
-    if (!formData.password.match(passwordRegex)) {
-      newErrors.password = "Password is invalid.It must contain at least 6 characters, including at least one digit, one lowercase letter, and one uppercase letter.";
-    }
+    // if (!formData.password.match(passwordRegex)) {
+    //   newErrors.password = "Password is invalid.It must contain at least 6 characters, including at least one digit, one lowercase letter, and one uppercase letter.";
+    // }
     if (!formData.studentNo.match(studentNoRegex)) {
       newErrors.studentNo = "Student number is invalid";
     }
@@ -60,6 +71,12 @@ function App() {
     }
     if (!formData.contact.match(contactRegex)) {
       newErrors.contact = "Contact number is invalid";
+    }
+    for (const rule of validationRules) {
+      if (!rule.regex.test(formData.password)) {
+        newErrors.password = rule.error;
+        break; // Stop further checks if a password rule is not met
+      }
     }
 
     setErrors(newErrors);
@@ -202,7 +219,7 @@ function App() {
           {errors.username && <span className="em1">! {errors.username}</span>}
         </div>
         <Name
-          placeholder="minimum 6 characters"
+          placeholder="minimum 8 characters"
           type="password"
           name="password"
           text="Enter Password : "
