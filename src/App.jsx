@@ -75,7 +75,7 @@ function App() {
     for (const rule of validationRules) {
       if (!rule.regex.test(formData.password)) {
         newErrors.password = rule.error;
-        break; // Stop further checks if a password rule is not met
+        break; 
       }
     }
 
